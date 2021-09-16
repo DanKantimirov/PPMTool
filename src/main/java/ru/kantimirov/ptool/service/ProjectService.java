@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 public class ProjectService {
 
-    private ProjectRepository projectRepository;
+    private final ProjectRepository projectRepository;
 
     public ProjectService(ProjectRepository projectRepository) {
         this.projectRepository = projectRepository;
@@ -31,9 +31,10 @@ public class ProjectService {
                 throw new InnerLogicRuntimeException("Can not find a project by identifier:" + projectDTO.getIdentifier());
             }
             Optional<ProjectDTO> optionalProjectDTO = this.projectRepository.findByIdentifier(projectDTO.getIdentifier());
-            if (!optionalProjectDTO.isPresent()) {
+            if (optionalProjectDTO.isEmpty()) {
                 throw new InnerLogicRuntimeException("Can not find a project by identifier:" + projectDTO.getIdentifier());
             }
+            projectDTO.setId(optionalProjectDTO.get().getId());
             return this.projectRepository.save(projectDTO);
         } catch (Exception e) {
             throw new InnerLogicRuntimeException(e.getMessage());
@@ -50,7 +51,7 @@ public class ProjectService {
 
     public Boolean deleteProjectByIdentifier(String identifier) {
         Optional<ProjectDTO> optionalProjectDTO = this.findByIdentifier(identifier);
-        if (!optionalProjectDTO.isPresent()) {
+        if (optionalProjectDTO.isEmpty()) {
             throw new InnerLogicRuntimeException("Can not find a project with identifier:" + identifier);
         }
         this.projectRepository.delete(optionalProjectDTO.get());

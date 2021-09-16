@@ -15,7 +15,7 @@ import java.util.Optional;
 @RequestMapping(path = "/api/project/")
 public class ProjectController {
 
-    private ProjectService projectService;
+    private final ProjectService projectService;
 
     public ProjectController(ProjectService projectService) {
         this.projectService = projectService;
@@ -42,7 +42,7 @@ public class ProjectController {
     @GetMapping(value = "{identifier}")
     public ResponseEntity<?> findByIdentifier(@PathVariable("identifier") String identifier) {
         Optional<ProjectDTO> optionalProject = this.projectService.findByIdentifier(identifier);
-        if (!optionalProject.isPresent()) {
+        if (optionalProject.isEmpty()) {
             throw new InnerLogicRuntimeException("Can not find a project with identifier: " + identifier);
         }
         return new ResponseEntity<>(optionalProject.get(), HttpStatus.OK);
